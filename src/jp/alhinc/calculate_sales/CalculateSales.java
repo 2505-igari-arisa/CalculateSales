@@ -37,7 +37,7 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-
+		File[] totalfiles = new totalfiles ここにファイルのパス.listFiles();
 
 
 		// 支店別集計ファイル書き込み処理
@@ -65,9 +65,16 @@ public class CalculateSales {
 			br = new BufferedReader(fr);
 
 			String line;
-			// 一行ずつ読み込む
+			// 支店定義ファイルを一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				//カンマの位置で分割
+				String[] items = line.split(",");
+
+				//支店コードと支店名を保持するMapに追加する2つの情報をputの引数として指定
+			    branchNames.put(items[0],items[1]);
+			    branchSales.put("支店コード", 0L);
+
 				System.out.println(line);
 			}
 
