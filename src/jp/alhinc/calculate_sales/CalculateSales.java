@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CalculateSales {
@@ -37,8 +39,47 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] totalfiles = new totalfiles ここにファイルのパス.listFiles();
+		//全てのファイルを取得する
+		File[] files = new File (args[0]).listFiles();
 
+		//条件に一致したファイルだけを入れるリスト
+		List<File> rcdFiles = new ArrayList<>();
+
+		//取得したファイルに格納されているファイル名を取得
+		for(int i = 0; i < files.length ; i++) {
+
+			//ファイル名の条件が一致しているか（0-9の8桁で始まって.rcdで終わる）
+			if(files[i].getName().matches("^[0-9]{8}[.]rcd$")) {
+
+				//trueならリストに入れる※falsなら入らない
+				rcdFiles.add(files[i]);
+			}
+
+		//リストに入ったファイルの数だけ繰り返し処理
+		for(int rcdi = 0; rcdi < rcdFiles.size(); rcdi++) {
+
+			BufferedReader rcdbr = null;
+
+				try {
+					//rcdFilesのfiles[i]の場所を指定
+					File openfile = new File(rcdFiles, files[i]);
+					//指定した場所のファイル読み込み
+					FileReader rcdfr = new FileReader(openfile);
+					//
+					rcdbr = new BufferedReader(rcdfr);
+
+					String rcdline;
+					// リストに入ったファイルを一行ずつ読み込む
+					while((rcdline = rcdbr.readLine()) != null) {
+
+						String[] rcditems = rcdline.split("/n");
+					}
+				}
+
+		}
+
+
+		}
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
