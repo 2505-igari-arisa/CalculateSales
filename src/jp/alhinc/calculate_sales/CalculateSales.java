@@ -51,41 +51,47 @@ public class CalculateSales {
 			//ファイル名の条件が一致しているか（0-9の8桁で始まって.rcdで終わる）
 			if(files[i].getName().matches("^[0-9]{8}[.]rcd$")) {
 
-				//trueならリストに入れる※falsなら入らない
+				//trueならrcdFilesリストに入れる※falsなら入らない
 				rcdFiles.add(files[i]);
 			}
-
+		}
+		//ここから処理内容2-2
 		//リストに入ったファイルの数だけ繰り返し処理
-		for(int rcdi = 0; rcdi < rcdFiles.size(); rcdi++) {
+		for(int i = 0; i < rcdFiles.size(); i++) {
 
+			//2-1で選別したファイルから読み込んだ支店コードと売上額を格納するリスト(文字列)
+			List<String> rcdCodeFiles = new ArrayList<>();
+
+			//2-1でaddしたファイルを読み込む
 			BufferedReader rcdbr = null;
 
 				try {
-					//rcdFilesのfiles[i]の場所を指定
-					File openfile = new File(rcdFiles, files[i]);
-					//指定した場所のファイル読み込み
+					//rcdFileから中身を確認するファイルを取り出して、ファイル名を取得する
+					File openfile = new File(args[0],rcdFiles.get(i).getName());
 					FileReader rcdfr = new FileReader(openfile);
-					//
 					rcdbr = new BufferedReader(rcdfr);
 
+					// 売上ファイルを一行ずつ読み込む
 					String rcdline;
-					// リストに入ったファイルを一行ずつ読み込む
 					while((rcdline = rcdbr.readLine()) != null) {
 
-						String[] rcditems = rcdline.split("/n");
+					//一行ごとに内容を格納するリストの中に入れる※rcdCodeFilesリストに入れる
+					rcdCodeFiles.add(rcdline);
+
+					//支店コードと売上金額を保持するMapと同じ<String, Long>にする
+					long fileSale = Long.parseLong(rcdline);
+
+					//Map(HashMap)から値を取得する
+					Long saleAmount = branchSales.get + fileSale;
+
 					}
-				}
-
-		}
-
-
-		}
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
-
+		}
+		}
 	}
 
 	/**
