@@ -65,32 +65,51 @@ public class CalculateSales {
 			//2-1でaddしたファイルを読み込む
 			BufferedReader rcdbr = null;
 
-				try {
-					//rcdFileから中身を確認するファイルを取り出して、ファイル名を取得する
-					File openfile = new File(args[0],rcdFiles.get(i).getName());
-					FileReader rcdfr = new FileReader(openfile);
-					rcdbr = new BufferedReader(rcdfr);
+			try {
+				//rcdFileから中身を確認するファイルを取り出して、ファイル名を取得する
+				File openfile = new File(args[0],rcdFiles.get(i).getName());
+				FileReader rcdfr = new FileReader(openfile);
+				rcdbr = new BufferedReader(rcdfr);
 
-					// 売上ファイルを一行ずつ読み込む
-					String rcdline;
-					while((rcdline = rcdbr.readLine()) != null) {
+				// 売上ファイルを一行ずつ読み込む
+				String rcdline;
+				while((rcdline = rcdbr.readLine()) != null) {
 
 					//一行ごとに内容を格納するリストの中に入れる※rcdCodeFilesリストに入れる
 					rcdCodeFiles.add(rcdline);
+				}
 
-					//支店コードと売上金額を保持するMapと同じ<String, Long>にする
-					long fileSale = Long.parseLong(rcdline);
+				//売上金額のみ支店コードと売上金額を保持するMapと同じ<Long型>にする
+				long fileSale = Long.parseLong(rcdCodeFiles.get(1));
 
-					//Map(HashMap)から値を取得する
-					Long saleAmount = branchSales.get + fileSale;
+				//Map(HashMap)から値を取得する
+				//読み込んできた売り上げファイル内の一致する支店コードの売上金額
+				Long saleAmount = branchSales.get(rcdCodeFiles.get(0)) + fileSale;
 
+				branchSales.put(saleAmount);
+
+
+
+			} catch(IOException e) {
+				System.out.println(UNKNOWN_ERROR);
+				return ;
+			} finally {
+				// ファイルを開いている場合
+				if(rcdbr != null) {
+					try {
+						// ファイルを閉じる
+						rcdbr.close();
+					} catch(IOException e) {
+						System.out.println(UNKNOWN_ERROR);
+						return ;
 					}
+				}
+			}
 
-		// 支店別集計ファイル書き込み処理
-		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
+		}
+		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) { //支店別集計ファイル書き込み処理
+
 			return;
-		}
-		}
 		}
 	}
 
@@ -120,7 +139,7 @@ public class CalculateSales {
 
 				//支店コードと支店名を保持するMapに追加する2つの情報をputの引数として指定
 			    branchNames.put(items[0],items[1]);
-			    branchSales.put("支店コード", 0L);
+			    branchSales.put(items[0], 0L);
 
 				System.out.println(line);
 			}
