@@ -42,16 +42,16 @@ public class CalculateSales {
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		//全てのファイルを取得する
-		File[] files = new File (args[0]).listFiles();
+		File[] files = new File(args[0]).listFiles();
 
 		//条件に一致したファイルだけを入れるリスト
 		List<File> rcdFiles = new ArrayList<>();
 
 		//取得したファイルに格納されているファイル名を取得
-		for(int i = 0; i < files.length ; i++) {
+		for(int i = 0; i < files.length; i++){
 
 			//ファイル名の条件が一致しているか（0-9の8桁で始まって.rcdで終わる）
-			if(files[i].getName().matches("^[0-9]{8}[.]rcd$")) {
+			if(files[i].getName().matches("^[0-9]{8}[.]rcd$")){
 
 				//trueならrcdFilesリストに入れる※falsなら入らない
 				rcdFiles.add(files[i]);
@@ -69,7 +69,7 @@ public class CalculateSales {
 
 			try {
 				//rcdFileから中身を確認するファイルを取り出して、ファイル名を取得する
-				File openfile = new File(args[0],rcdFiles.get(i).getName());
+				File openfile = new File(args[0], rcdFiles.get(i).getName());
 				FileReader rcdfr = new FileReader(openfile);
 				rcdbr = new BufferedReader(rcdfr);
 
@@ -94,7 +94,7 @@ public class CalculateSales {
 
 			} catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
-				return ;
+				return;
 			} finally {
 				// ファイルを開いている場合
 				if(rcdbr != null) {
@@ -103,7 +103,7 @@ public class CalculateSales {
 						rcdbr.close();
 					} catch(IOException e) {
 						System.out.println(UNKNOWN_ERROR);
-						return ;
+						return;
 					}
 				}
 			}
@@ -140,7 +140,7 @@ public class CalculateSales {
 				String[] items = line.split(",");
 
 				//支店コードと支店名を保持するMapに追加する2つの情報をputの引数として指定
-			    branchNames.put(items[0],items[1]);
+			    branchNames.put(items[0], items[1]);
 			    branchSales.put(items[0], 0L);
 
 			}
@@ -188,7 +188,7 @@ public class CalculateSales {
 
 			//String key で branchNamesから支店コード(key)を取得
 			for(String key : branchNames.keySet()) {
-				bw.write(key+ ","+ branchNames.get(key)+ ","+ branchSales.get(key));
+				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
 				bw.newLine();
 
 			}
