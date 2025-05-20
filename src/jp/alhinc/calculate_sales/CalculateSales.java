@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,22 @@ public class CalculateSales {
 				rcdFiles.add(files[i]);
 			}
 		}
+		//Listの中身をソートする
+		Collections.sort(rcdFiles);
+
+		//売上ファイルが連番になっているか確認する：エラー処理2-1
+		for(int i = 0; i < rcdFiles.size() - 1; i++) {
+			//リストに入れた売上ファイルのi番目からファイル名をgetして
+			//先頭から数字の8文字を切り出しint型に変換
+			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
+
+				if((latter - former) != 1) {
+					System.out.println("売上ファイル名が連番になっていません");
+					return;
+			}
+		}
+
 		//ここから処理内容2-2
 		//リストに入ったファイルの数だけ繰り返し処理
 		for(int i = 0; i < rcdFiles.size(); i++) {
@@ -81,12 +98,30 @@ public class CalculateSales {
 					rcdCodeFiles.add(rcdLine);
 				}
 
+					//該当する支店コードがあるか確認する：エラー処理2-3
+					if (!branchSales.containsKey(rcdCodeFiles.get(0))) {
+						System.out.println("<" + rcdFiles.get(i).getName() + ">の支店コードが不正です");
+						return;
+					}
+
+					//売上ファイルのフォーマットを確認する：エラー処理2-4
+					if(rcdCodeFiles.size() != 2) {
+						System.out.println("<" + rcdFiles.get(i).getName() + ">のフォーマットが不正です");
+						return;
+					}
+
 				//売上金額のみ支店コードと売上金額を保持するMapと同じ<Long型>にする
 				long fileSale = Long.parseLong(rcdCodeFiles.get(1));
 
 				//Map(HashMap)から値を取得する
 				//読み込んできた売り上げファイル内の一致する支店コードの売上金額
 				Long saleAmount = branchSales.get(rcdCodeFiles.get(0)) + fileSale;
+
+					//売上⾦額が11桁以上になっていないか確認する：エラー処理2-2
+					if(saleAmount >= 10000000000L) {
+						System.out.println("合計金額が10桁を超えました");
+						return;
+					}
 
 				//加算した売上金額をbranchSalesに上書きする
 				branchSales.put(rcdCodeFiles.get(0), saleAmount);
@@ -129,15 +164,29 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
+
+			//ファイルの存在を確認する：エラー処理1
+			if(!file.exists()) {
+				System.out.println(FILE_NOT_EXIST);
+				return false;
+			}
+
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
 			String line;
 			// 支店定義ファイルを一行ずつ読み込む
 			while((line = br.readLine()) != null) {
+
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				//カンマの位置で分割
 				String[] items = line.split(",");
+
+				//支店定義ファイルのフォーマットを確認する：エラー処理1-2
+				if((items.length != 2) || (!items[0].matches("^[0-9]{3}$"))){
+					System.out.println(FILE_INVALID_FORMAT);
+					return false;
+				}
 
 				//支店コードと支店名を保持するMapに追加する2つの情報をputの引数として指定
 			    branchNames.put(items[0], items[1]);
