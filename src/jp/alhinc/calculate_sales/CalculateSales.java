@@ -69,16 +69,16 @@ public class CalculateSales {
 
 			try {
 				//rcdFileから中身を確認するファイルを取り出して、ファイル名を取得する
-				File openfile = new File(args[0], rcdFiles.get(i).getName());
-				FileReader rcdfr = new FileReader(openfile);
+				File openFile = new File(args[0], rcdFiles.get(i).getName());
+				FileReader rcdfr = new FileReader(openFile);
 				rcdbr = new BufferedReader(rcdfr);
 
 				// 売上ファイルを一行ずつ読み込む
-				String rcdline;
-				while((rcdline = rcdbr.readLine()) != null) {
+				String rcdLine;
+				while((rcdLine = rcdbr.readLine()) != null) {
 
 					//一行ごとに内容を格納するリストの中に入れる※rcdCodeFilesリストに入れる
-					rcdCodeFiles.add(rcdline);
+					rcdCodeFiles.add(rcdLine);
 				}
 
 				//売上金額のみ支店コードと売上金額を保持するMapと同じ<Long型>にする
