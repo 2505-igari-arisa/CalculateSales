@@ -24,6 +24,10 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
+	private static final String FILE_NOT_CONSECUTIVE = "売上ファイル名が連番になっていません";
+	private static final String SALEFILE_INVALID_FORMAT = "のフォーマットが不正です";
+	private static final String SALEFILE_INVALID_BRANCHCODE = "の支店コードが不正です";
+	private static final String OVER_TOTAL_BRANCHSALES = "合計金額が10桁を超えました";
 
 	/**
 	 * メインメソッド
@@ -77,7 +81,7 @@ public class CalculateSales {
 			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
 
 				if((latter - former) != 1) {
-					System.out.println("売上ファイル名が連番になっていません");
+					System.out.println(FILE_NOT_CONSECUTIVE);
 					return;
 			}
 		}
@@ -106,42 +110,38 @@ public class CalculateSales {
 					rcdCodeFiles.add(rcdLine);
 				}
 
-				//該当する支店コードがあるか確認する：エラー処理2-3
-				if (!branchSales.containsKey(rcdCodeFiles.get(0))) {
-					System.out.println("<" + rcdFiles.get(i).getName() + ">の支店コードが不正です");
+				//売上ファイルのフォーマットを確認する：エラー処理2-4
+				if(rcdCodeFiles.size() != 2) {
+					System.out.println(rcdFiles.get(i).getName() + SALEFILE_INVALID_FORMAT);
 					return;
 				}
 
-				//売上ファイルのフォーマットを確認する：エラー処理2-4
-				if(rcdCodeFiles.size() != 2) {
-					System.out.println("<" + rcdFiles.get(i).getName() + ">のフォーマットが不正です");
+				//該当する支店コードがあるか確認する：エラー処理2-3
+				if (!branchSales.containsKey(rcdCodeFiles.get(0))) {
+					System.out.println(rcdFiles.get(i).getName() + SALEFILE_INVALID_BRANCHCODE);
 					return;
 				}
 
 					//売上金額が数字なのか確認する：エラー処理3-3
-				if(rcdCodeFiles.get(1).matches("^[0-9]+$")) {
+				if(rcdCodeFiles.get(1).matches("^[^0-9]+$")) {
+					System.out.println(UNKNOWN_ERROR);
+					return;
+				}
 
-					//売上金額のみ支店コードと売上金額を保持するMapと同じ<Long型>にする
-					long fileSale = Long.parseLong(rcdCodeFiles.get(1));
+				//売上金額のみ支店コードと売上金額を保持するMapと同じ<Long型>にする
+				long fileSale = Long.parseLong(rcdCodeFiles.get(1));
 
+				//Map(HashMap)から値を取得する
+				//読み込んできた売り上げファイル内の一致する支店コードの売上金額を加算する
+				Long saleAmount = branchSales.get(rcdCodeFiles.get(0)) + fileSale;
 
-					//Map(HashMap)から値を取得する
-					//読み込んできた売り上げファイル内の一致する支店コードの売上金額を加算する
-					Long saleAmount = branchSales.get(rcdCodeFiles.get(0)) + fileSale;
-
-					//売上金額が11桁以上になっていないか確認する：エラー処理2-2
-					if(saleAmount >= 10000000000L) {
-						System.out.println("合計金額が10桁を超えました");
-						return;
-					}
+				//売上金額が11桁以上になっていないか確認する：エラー処理2-2
+				if(saleAmount >= 10000000000L) {
+					System.out.println(OVER_TOTAL_BRANCHSALES);
+					return;
+				}
 						//加算した売上金額をbranchSalesに上書きする
 						branchSales.put(rcdCodeFiles.get(0), saleAmount);
-
-					//エラー処理3-3で売上金額が数字ではない場合にエラーを表示
-					}else {
-						System.out.println(UNKNOWN_ERROR);
-						return;
-				}
 
 			} catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
@@ -205,9 +205,8 @@ public class CalculateSales {
 				}
 
 				//支店コードと支店名を保持するMapに追加する2つの情報をputの引数として指定
-			    branchNames.put(items[0], items[1]);
-			    branchSales.put(items[0], 0L);
-
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 			}
 
 		} catch(IOException e) {
