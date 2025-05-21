@@ -32,6 +32,7 @@ public class CalculateSales {
 	 */
 	public static void main(String[] args) {
 
+		//コマンドライン引数が渡されているか確認する：エラー処理3-1
 		if (args.length != 1) {
 			System.out.println(UNKNOWN_ERROR);
 			return;
